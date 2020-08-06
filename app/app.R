@@ -394,43 +394,97 @@ output$plot41b <- renderPlot({
 output$plot91a <- renderPlot({
   box <- "Totals"
   cscheme <- orange_radar_tot
-  title <- "Mobile Phone Ownership\n"
   st <- "(Total Population)"
-  cpt <- county
-  sdg9_plots(V4_T2.32, input$county, box, cscheme, title,st, cpt)
-
+  cpt <- input$county
+  if(input$indicator == "Mobile phone ownership"){
+    title <- "Mobile Phone Ownership\n"
+    indicator = "MPO"
+  }else
+    if(input$indicator == "Use of Internet"){
+      title <- "Use of Internet\n"
+      indicator = "UoI"
+    }else
+      if(input$indicator == "Use of Desktop/Laptop/Tablet"){
+        title <- "Use of Desktop/Laptop/Tablet\n"
+        indicator = "UoDLT"
+      }else
+        if(input$indicator == "Search goods online"){
+          title <- "Search goods online\n"
+          indicator = "Searched Goods Online"
+        }
+  sdg9_plots(input$county, box, indicator, cscheme, title,st, cpt)
 })
  
 output$plot91b <- renderPlot({
-  box <- "MPO_Female_Perc"
   cscheme <- orange_femalemales
-  title <- "Mobile Phone Ownership\n"
-  st <- "Males vs Females"
-  cpt <- county
-  sdg9_malefemale(V4_T2.32, input$county, cscheme, title, st, cpt)
-
+  st <- "(Males vs Females)"
+  cpt <- input$county
+  if(input$indicator == "Mobile phone ownership"){
+    title <- "Mobile Phone Ownership\n"
+    indicator = "MPO"
+  }else
+    if(input$indicator == "Use of Internet"){
+      title <- "Use of Internet\n"
+      indicator = "UoI"
+    }else
+      if(input$indicator == "Use of Desktop/Laptop/Tablet"){
+        title <- "Use of Desktop/Laptop/Tablet\n"
+        indicator = "UoDLT"
+      }else
+        if(input$indicator == "Search goods online"){
+          title <- "Search goods online\n"
+          indicator = "Searched Goods Online"
+        }
+  sdg9_malefemale(input$county, indicator, cscheme, title,st, cpt)
 })
 
 output$plot91c <- renderPlot({
   box <- "Females"
   cscheme <- orange_radar_female
-  title <- "Mobile Phone Ownership\n"
   st <- "(Females)"
-  cpt <- county
-  sdg9_plots(V4_T2.32, input$county, box, cscheme, title,st, cpt)
-  
+  cpt <- input$county
+  if(input$indicator == "Mobile phone ownership"){
+    title <- "Mobile Phone Ownership\n"
+    indicator = "MPO"
+  }else
+    if(input$indicator == "Use of Internet"){
+      title <- "Use of Internet\n"
+      indicator = "UoI"
+    }else
+      if(input$indicator == "Use of Desktop/Laptop/Tablet"){
+        title <- "Use of Desktop/Laptop/Tablet\n"
+        indicator = "UoDLT"
+      }else
+        if(input$indicator == "Search goods online"){
+          title <- "Search goods online\n"
+          indicator = "Searched Goods Online"
+        }
+  sdg9_plots(input$county, box, indicator, cscheme, title,st, cpt)
 })
 
 output$plot91d <- renderPlot({
   box <- "Males"
   cscheme <- orange_radar_male
-  title <- "Mobile Phone Ownership\n"
   st <- "(Males)"
-  cpt <- county
-  sdg9_plots(V4_T2.32, input$county, box, cscheme, title,st, cpt)
-  
+  cpt <- input$county
+  if(input$indicator == "Mobile phone ownership"){
+    title <- "Mobile Phone Ownership\n"
+    indicator = "MPO"
+  }else
+    if(input$indicator == "Use of Internet"){
+      title <- "Use of Internet\n"
+      indicator = "UoI"
+    }else
+      if(input$indicator == "Use of Desktop/Laptop/Tablet"){
+        title <- "Use of Desktop/Laptop/Tablet\n"
+        indicator = "UoDLT"
+      }else
+        if(input$indicator == "Search goods online"){
+          title <- "Search goods online\n"
+          indicator = "Searched Goods Online"
+        }
+  sdg9_plots(input$county, box, indicator, cscheme, title,st, cpt)
 })
-
 
 #orange_radar <- c("#FF4F00", "#FFD700")
 

@@ -44,7 +44,7 @@ sdgs <- unique(sdg_file$SDG)
 
 ## We are going to filter the SDGs to only be left with the ones we are ready to analyse.
 
-sdgs <- grep("9", sdgs, value = T, ignore.case = T)
+sdgs <- grep("Poverty|Education|Sanitation|Innovation", sdgs, value = T, ignore.case = T)
 
 ## Color palettes
 

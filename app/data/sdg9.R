@@ -44,18 +44,20 @@ df0 <- df0 %>%
 
 ############### Generate the plot
 
-sdg9_plots <- function(dat, county, box, cscheme, title,st, cpt){
+sdg9_plots <- function(county, box, indicator, cscheme, title,st, cpt){
 
-  df <- dat %>% 
-    filter(AdminArea == "xxx" | AdminArea == "County") %>% 
-    select(County, contains("_perc")) %>% 
-    gather("Box", "With", -County, na.rm=TRUE) %>% 
-    mutate(Without = 100 - With) %>% 
-    gather("Category","Value", -County, -Box) %>%
-    group_by(County) %>%
-    arrange(County, Box, Category) %>% 
-    mutate(Box = paste0(gsub("MPO_|_Perc","",Box),"s"))
-  
+  # df <- dat %>% 
+  #   filter(AdminArea == "xxx" | AdminArea == "County") %>% 
+  #   select(County, contains("_perc")) %>% 
+  #   gather("Box", "With", -County, na.rm=TRUE) %>% 
+  #   mutate(Without = 100 - With) %>% 
+  #   gather("Category","Value", -County, -Box) %>%
+  #   group_by(County) %>%
+  #   arrange(County, Box, Category) %>% 
+  #   mutate(Box = paste0(gsub("MPO_|_Perc","",Box),"s"))
+  # 
+ df <- df0
+ 
   if(title %in% grep("Mobile Phone Ownership", title, value = T, ignore.case = T)){
     df  <- df %>% 
       mutate(Category = ifelse(Category == "With", "Own \nmobile phones", "Don't Own \nmobile phones"))
@@ -76,7 +78,7 @@ sdg9_plots <- function(dat, county, box, cscheme, title,st, cpt){
   
 
 data <- df %>% 
-  filter(County == county & Box == box)
+  filter(County == county & Box == box & ind == indicator)
 
 # Compute percentages
 
@@ -125,19 +127,64 @@ return(p)
 # cpt <- "TURKANA"
 # sdg9_plots(dat, county, box, cscheme, title, cpt)
 
-sdg9_malefemale <- function(dat, county, cscheme, title,st, cpt){
-  
-df2 <- V4_T2.32 %>% 
+
+
+dfa <- V4_T2.32 %>% 
   filter(AdminArea == "xxx" | AdminArea == "County") %>% 
   select(County, MPO_Total, MPO_Female, MPO_Male) %>% 
   mutate(MPO_Female = round(MPO_Female / MPO_Total *100, 1),
          MPO_Male = round(MPO_Male / MPO_Total *100, 1)) %>% 
-  select(-MPO_Total) %>% 
-  gather("Category","Value", -County)
+  select(-MPO_Total) 
+
+dfb <- V4_T2.33 %>% 
+  filter(AdminArea == "xxx" | AdminArea == "County") %>% 
+  select(County, UoI_Total, UoI_Male, UoI_Female, UoDLT_Total, UoDLT_Male, UoDLT_Female) %>% 
+  mutate(UoI_Female = round(UoI_Female / UoI_Total *100, 1),
+         UoI_Male = round(UoI_Male / UoI_Total *100, 1),
+         UoDLT_Female = round(UoDLT_Female / UoDLT_Total *100, 1),
+         UoDLT_Male = round(UoDLT_Male / UoDLT_Total *100, 1)) %>% 
+  select(-UoI_Total, -UoDLT_Total) 
+
+dfc <- V4_T2.34 %>% 
+  filter(AdminArea == "xxx" | AdminArea == "County") %>% 
+  select(County, SearchedOnline_Total, SearchedOnline_Female, SearchedOnline_Male) %>% 
+  mutate(SearchedOnline_Female = round(SearchedOnline_Female / SearchedOnline_Total *100, 1),
+         SearchedOnline_Male = round(SearchedOnline_Male / SearchedOnline_Total *100, 1)) %>% 
+  select(-SearchedOnline_Total) 
+
+dfa$County[1:3] <- c("Total", "Total: Rural", "Total: Urban")
+dfb$County[1:3] <- c("Total", "Total: Rural", "Total: Urban")
+dfc$County[1:3] <- c("Total", "Total: Rural", "Total: Urban")
+
+df02 <- Reduce(function(x,y) merge(x = x, y = y, by = "County"), 
+              list(dfa, dfb, dfc))
+
+df02 <- df02 %>% 
+  gather("Category","Value", -County) %>%
+  group_by(County) %>%
+  arrange(County, Category) %>% 
+  mutate(ind = ifelse(Category  %in% grep("MPO",Category, value = T, ignore.case = T), "MPO",
+                      ifelse(Category  %in% grep("UoDLT",Category, value = T, ignore.case = T), "UoDLT",
+                             ifelse(Category  %in% grep("SearchedOnline",Category, value = T, ignore.case = T), 
+                                    "Searched Goods Online",
+                                    ifelse(Category  %in% grep("UoI",Category, value = T, ignore.case = T), "UoI",
+                                           Category))))) %>% 
+  mutate(Category = paste0(gsub("MPO_|_Perc|UoDLT_|SearchedOnline_|UoI_","",Category),"s"))
 
 
-data <- df2 %>% 
-  filter(County == county)
+sdg9_malefemale <- function(county,indicator, cscheme, title,st, cpt){
+  
+# df2 <- V4_T2.32 %>%
+#   filter(AdminArea == "xxx" | AdminArea == "County") %>%
+#   select(County, MPO_Total, MPO_Female, MPO_Male) %>%
+#   mutate(MPO_Female = round(MPO_Female / MPO_Total *100, 1),
+#          MPO_Male = round(MPO_Male / MPO_Total *100, 1)) %>%
+#   select(-MPO_Total) %>%
+#   gather("Category","Value", -County)
+
+data <- df02 %>% 
+  ungroup() %>% 
+  filter(County == county & ind == indicator)
 
 # Compute percentages
 
@@ -179,11 +226,12 @@ return(p)
 }
 
 
-dat <- V4_T2.32
+dat <- df02
 county <- "WEST POKOT"
 box <- "MPO_Total_Perc"
 cscheme <- orange_femalemales
 title <- "Population Age 3 years and Above Owning a Mobile Phone"
 st = ""
 cpt <- "TURKANA"
-sdg9_malefemale(dat, county, cscheme, title, st, cpt)
+indicator = "MPO"
+sdg9_malefemale(county, indicator,  cscheme, title, st, cpt)
